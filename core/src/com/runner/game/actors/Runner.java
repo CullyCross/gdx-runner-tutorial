@@ -10,6 +10,7 @@ public class Runner extends GameActor {
 
     private boolean mJumping;
     private boolean mDodging;
+    private boolean mHit;
 
     @Override
     public RunnerUserData getUserData() {
@@ -22,7 +23,7 @@ public class Runner extends GameActor {
 
     public void jump() {
 
-        if(!mJumping || !mDodging) {
+        if(!mJumping || !mDodging || !mHit) {
             mBody.applyLinearImpulse(getUserData().getJumpingLinearImpulse(), mBody.getWorldCenter(), true);
             mJumping = true;
         }
@@ -33,7 +34,7 @@ public class Runner extends GameActor {
     }
 
     public void dodge() {
-        if(!mJumping) {
+        if(!mJumping || !mHit) {
             mBody.setTransform(getUserData().getDodgePosition(), getUserData().getDodgeAngle());
             mDodging = true;
         }
@@ -41,10 +42,21 @@ public class Runner extends GameActor {
 
     public void stopDodge() {
         mDodging = false;
-        mBody.setTransform(getUserData().getRunningPosition(), 0f);
+        if (!mHit) {
+            mBody.setTransform(getUserData().getRunningPosition(), 0f);
+        }
     }
 
     public boolean isDodging() {
         return mDodging;
+    }
+
+    public void hit() {
+        mBody.applyAngularImpulse(getUserData().getHitAngularImpulse(), true);
+        mHit = true;
+    }
+
+    public boolean isHit() {
+        return mHit;
     }
 }
