@@ -7,8 +7,8 @@ import com.runner.game.enums.UserDataType;
  */
 public class GroundUserData extends UserData {
 
-    public GroundUserData() {
-        super();
+    public GroundUserData(float width, float height) {
+        super(width, height);
         mUserDataType = UserDataType.GROUND;
     }
 }

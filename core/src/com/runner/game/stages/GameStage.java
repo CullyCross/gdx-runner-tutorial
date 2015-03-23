@@ -7,10 +7,14 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.runner.game.actors.Background;
 import com.runner.game.actors.Enemy;
 import com.runner.game.actors.Ground;
 import com.runner.game.actors.Runner;
 import com.runner.game.utils.BodyUtils;
+import com.runner.game.utils.Constants;
 import com.runner.game.utils.WorldUtils;
 
 /**
@@ -18,8 +22,8 @@ import com.runner.game.utils.WorldUtils;
  */
 public class GameStage extends Stage implements ContactListener {
 
-    private static final int VIEWPORT_WIDTH = 20;
-    private static final int VIEWPORT_HEIGHT = 13;
+    private static final int VIEWPORT_WIDTH = Constants.APP_WIDTH;
+    private static final int VIEWPORT_HEIGHT = Constants.APP_HEIGHT;
 
     private World mWorld;
     private Ground mGround;
@@ -29,7 +33,6 @@ public class GameStage extends Stage implements ContactListener {
     private float mAccumulator = 0f;
 
     private OrthographicCamera mCamera;
-    private Box2DDebugRenderer mRenderer;
 
     private Rectangle mScreenRightSide;
     private Rectangle mScreenLeftSide;
@@ -37,10 +40,10 @@ public class GameStage extends Stage implements ContactListener {
     private Vector3 mTouchPoint;
 
     public GameStage() {
+        super(new ScalingViewport(Scaling.stretch, VIEWPORT_WIDTH, VIEWPORT_HEIGHT,
+                new OrthographicCamera(VIEWPORT_WIDTH, VIEWPORT_HEIGHT)));
+
         setupWorld();
-
-        mRenderer = new Box2DDebugRenderer();
-
         setupCamera();
         setupTouchControlAreas();
     }
@@ -76,9 +79,14 @@ public class GameStage extends Stage implements ContactListener {
     private void setupWorld() {
         mWorld = WorldUtils.createWorld();
         mWorld.setContactListener(this);
+        setupBackground();
         setupGround();
         setupRunner();
         createEnemy();
+    }
+
+    private void setupBackground() {
+        addActor(new Background());
     }
 
     private void setupGround() {
@@ -145,13 +153,6 @@ public class GameStage extends Stage implements ContactListener {
             }
             mWorld.destroyBody(body);
         }
-    }
-
-    @Override
-    public void draw() {
-        super.draw();
-
-        mRenderer.render(mWorld, mCamera.combined);
     }
 
     @Override
